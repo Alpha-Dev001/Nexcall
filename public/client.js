@@ -76,8 +76,12 @@ function showNotification(message, type) {
     notification.textContent = message;
     notification.className = `notification notification-${type}`;
     document.body.appendChild(notification);
+
     setTimeout(() => {
-        notification.remove();
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
     }, 3000);
 }
 
@@ -90,7 +94,7 @@ async function startCall() {
 
     try {
         console.log('Starting call in room:', currentRoom);
-        showLoading('Starting video call...');
+        showLoading('Starting premium video call...');
 
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
@@ -181,7 +185,7 @@ function joinRoom() {
     }
 
     currentRoom = roomValue;
-    showLoading(`Joining room: ${roomValue}`);
+    showLoading(`Joining premium room: ${roomValue}`);
 
     socket.emit('join-room', currentRoom);
     console.log('Joined room:', currentRoom);
