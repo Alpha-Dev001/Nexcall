@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "node build.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:build": "docker build -t nexcall .",
+    "docker:run": "docker run -p 5000:5000 nexcall",
+    "docker:compose": "docker-compose up -d"
   },
   "keywords": [],
   "author": "",

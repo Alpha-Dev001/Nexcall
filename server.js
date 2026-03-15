@@ -3,27 +3,62 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      connectSrc: ["'self'", "wss:", "ws:"],
+      mediaSrc: ["'self'", "blob:"],
+      imgSrc: ["'self'", "data:", "blob:"]
+    }
   }
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  methods: ["GET", "POST"],
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+const io = socketIo(server, {
+  cors: corsOptions
 });
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
+
+// Database connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall');
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -52,6 +87,11 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+// For cloud platforms that require specific host binding
+const HOST = process.env.HOST || '0.0.0.0';
+
+server.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
