@@ -57,6 +57,11 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Serve main application route
+app.get('/', (req, res) => {
+  res.sendFile('index.html', { root: 'public' });
+});
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall');
 
