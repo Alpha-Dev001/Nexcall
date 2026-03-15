@@ -97,6 +97,13 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+    // Notify other users in the room
+    const rooms = io.sockets.adapter.rooms;
+    rooms.forEach((room, roomId) => {
+      if (roomId && room.has(socket.id)) {
+        socket.to(roomId).emit('user-disconnected', socket.id);
+      }
+    });
   });
 });
 

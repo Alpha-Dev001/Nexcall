@@ -12,29 +12,86 @@ const servers = {
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
+const roomSection = document.getElementById('roomSection');
+const videoSection = document.getElementById('videoSection');
+const loadingState = document.getElementById('loadingState');
+const roomInput = document.getElementById('roomInput');
+const startCallBtn = document.getElementById('startCallBtn');
+const endCallBtn = document.getElementById('endCallBtn');
+const connectionStatus = document.getElementById('connectionStatus');
+const statusText = document.getElementById('statusText');
+const userCount = document.getElementById('userCount');
+const remoteVideoContainer = document.getElementById('remoteVideoContainer');
 
 // Add connection status logging
 socket.on('connect', () => {
     console.log('Connected to server with ID:', socket.id);
+    updateConnectionStatus('online', 'Connected');
 });
 
 socket.on('disconnect', () => {
     console.log('Disconnected from server');
+    updateConnectionStatus('connecting', 'Disconnected');
 });
 
 socket.on('connect_error', (error) => {
     console.log('Connection error:', error);
+    updateConnectionStatus('connecting', 'Connection error');
 });
+
+// Update UI elements
+function updateConnectionStatus(status, text) {
+    connectionStatus.className = `status-indicator status-${status}`;
+    statusText.textContent = text;
+}
+
+function updateUserCount(count) {
+    userCount.querySelector('span').textContent = count;
+}
+
+function showSection(section) {
+    roomSection.classList.add('hidden');
+    videoSection.classList.add('hidden');
+    loadingState.classList.add('hidden');
+
+    section.classList.remove('hidden');
+    section.classList.add('slide-up');
+}
+
+function showLoading(message = 'Connecting...') {
+    showSection(loadingState);
+    loadingState.querySelector('p').textContent = message;
+}
+
+function showVideo() {
+    showSection(videoSection);
+}
+
+function showRoom() {
+    showSection(roomSection);
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = `notification notification-${type}`;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
 
 async function startCall() {
     if (!currentRoom) {
         console.error('No room set - please join a room first');
-        alert('Please join a room first!');
+        showNotification('Please join a room first!', 'error');
         return;
     }
 
     try {
         console.log('Starting call in room:', currentRoom);
+        showLoading('Starting video call...');
+
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
         console.log('Local media stream obtained');
@@ -49,6 +106,8 @@ async function startCall() {
         peerConnection.ontrack = (event) => {
             console.log('Received remote track');
             remoteVideo.srcObject = event.streams[0];
+            remoteVideoContainer.classList.remove('hidden');
+            showNotification('Remote user connected!', 'success');
         };
 
         peerConnection.onicecandidate = (event) => {
@@ -60,14 +119,11 @@ async function startCall() {
 
         peerConnection.oniceconnectionstatechange = (event) => {
             console.log('ICE connection state changed:', peerConnection.iceConnectionState);
-            if (peerConnection.iceConnectionState === 'failed') {
-                console.log('ICE connection failed');
-                alert('ICE connection failed');
+            if (peerConnection.iceConnectionState === 'connected') {
+                showNotification('Connection established!', 'success');
+            } else if (peerConnection.iceConnectionState === 'failed') {
+                showNotification('Connection failed. Please try again.', 'error');
             }
-        };
-
-        peerConnection.onnegotiationneeded = () => {
-            console.log('Negotiation needed');
         };
 
         peerConnection.onaddstream = (event) => {
@@ -89,9 +145,12 @@ async function startCall() {
         console.log('Created offer, sending to room:', currentRoom);
         socket.emit('offer', { offer, room: currentRoom });
 
+        showVideo();
+
     } catch (error) {
         console.error('Error starting call:', error);
-        alert('Error starting call: ' + error.message);
+        showNotification('Error starting call: ' + error.message, 'error');
+        showRoom();
     }
 }
 
@@ -101,25 +160,37 @@ function endCall() {
     }
     if (peerConnection) {
         peerConnection.close();
+        peerConnection = null;
     }
     localVideo.srcObject = null;
     remoteVideo.srcObject = null;
+    remoteVideoContainer.classList.add('hidden');
+
+    showNotification('Call ended', 'info');
+    showRoom();
 }
 
 let currentRoom;
 
 function joinRoom() {
-    const roomInput = document.getElementById('roomInput');
-    currentRoom = roomInput.value;
+    const roomValue = roomInput.value.trim();
 
-    if (currentRoom) {
-        socket.emit('join-room', currentRoom);
-        console.log('Joined room:', currentRoom);
+    if (!roomValue) {
+        showNotification('Please enter a room ID', 'error');
+        return;
     }
+
+    currentRoom = roomValue;
+    showLoading(`Joining room: ${roomValue}`);
+
+    socket.emit('join-room', currentRoom);
+    console.log('Joined room:', currentRoom);
+    updateUserCount(1); // One user in room
 }
 
 socket.on('user-connected', (userId) => {
     console.log('User connected:', userId);
+    updateUserCount(2); // Two users in room
     startCall();
 });
 
@@ -142,6 +213,8 @@ socket.on('offer', async (offer) => {
             peerConnection.ontrack = (event) => {
                 console.log('Received remote track in offer handler');
                 remoteVideo.srcObject = event.streams[0];
+                remoteVideoContainer.classList.remove('hidden');
+                showNotification('Remote user connected!', 'success');
             };
 
             peerConnection.onicecandidate = (event) => {
@@ -160,7 +233,7 @@ socket.on('offer', async (offer) => {
         socket.emit('answer', { answer, room: currentRoom });
     } catch (error) {
         console.error('Error handling offer:', error);
-        alert('Error handling incoming call: ' + error.message);
+        showNotification('Error handling incoming call: ' + error.message, 'error');
     }
 });
 
@@ -183,4 +256,10 @@ socket.on('ice-candidate', async (candidate) => {
     } catch (error) {
         console.error('Error adding ICE candidate:', error);
     }
+});
+
+socket.on('user-disconnected', (userId) => {
+    console.log('User disconnected:', userId);
+    updateUserCount(1); // Back to one user
+    showNotification('User left the call', 'info');
 });
