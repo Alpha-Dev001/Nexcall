@@ -1,4 +1,5 @@
-const socket = io();
+// Connect to the live server - change this if your URL changes
+const socket = io('https://nexcall-5srd.onrender.com');
 let localStream;
 let remoteStream;
 let peerConnection;
@@ -16,27 +17,27 @@ async function startCall() {
     try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
-        
+
         peerConnection = new RTCPeerConnection(servers);
-        
+
         localStream.getTracks().forEach(track => {
             peerConnection.addTrack(track, localStream);
         });
-        
+
         peerConnection.ontrack = (event) => {
             remoteVideo.srcObject = event.streams[0];
         };
-        
+
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
                 socket.emit('ice-candidate', { candidate: event.candidate, room: currentRoom });
             }
         };
-        
+
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
         socket.emit('offer', { offer, room: currentRoom });
-        
+
     } catch (error) {
         console.error('Error starting call:', error);
     }
@@ -58,7 +59,7 @@ let currentRoom;
 function joinRoom() {
     const roomInput = document.getElementById('roomInput');
     currentRoom = roomInput.value;
-    
+
     if (currentRoom) {
         socket.emit('join-room', currentRoom);
         console.log('Joined room:', currentRoom);
@@ -73,22 +74,22 @@ socket.on('user-connected', (userId) => {
 socket.on('offer', async (offer) => {
     if (!peerConnection) {
         peerConnection = new RTCPeerConnection(servers);
-        
+
         localStream.getTracks().forEach(track => {
             peerConnection.addTrack(track, localStream);
         });
-        
+
         peerConnection.ontrack = (event) => {
             remoteVideo.srcObject = event.streams[0];
         };
-        
+
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
                 socket.emit('ice-candidate', { candidate: event.candidate, room: currentRoom });
             }
         };
     }
-    
+
     await peerConnection.setRemoteDescription(offer);
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);

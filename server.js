@@ -33,7 +33,7 @@ app.use(limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  origin: "*", // Allow all origins for public access
   methods: ["GET", "POST"],
   credentials: true
 };
@@ -72,11 +72,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall')
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log('User connected:', socket.id, 'from:', socket.handshake.origin);
 
   socket.on('join-room', (roomId) => {
+    console.log(`User ${socket.id} joining room: ${roomId}`);
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', socket.id);
+    console.log(`Users in room ${roomId}:`, io.sockets.adapter.rooms.get(roomId)?.size || 1);
   });
 
   socket.on('offer', (data) => {
