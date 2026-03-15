@@ -1,8 +1,9 @@
 services:
   - type: web
     name: nexcall
-    env: node
+    runtime: node
     plan: free
+    rootDir: .
     buildCommand: npm install
     startCommand: npm start
     envVars:
