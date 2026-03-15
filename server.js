@@ -15,11 +15,13 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "blob:", "data:"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      connectSrc: ["'self'", "wss:", "ws:"],
+      connectSrc: ["'self'", "wss:", "ws:", "blob:"],
       mediaSrc: ["'self'", "blob:"],
-      imgSrc: ["'self'", "data:", "blob:"]
+      imgSrc: ["'self'", "data:", "blob:"],
+      workerSrc: ["'self'", "blob:"],
+      childSrc: ["'self'", "blob:"]
     }
   }
 }));

@@ -27,8 +27,14 @@ socket.on('connect_error', (error) => {
 });
 
 async function startCall() {
+    if (!currentRoom) {
+        console.error('No room set - please join a room first');
+        alert('Please join a room first!');
+        return;
+    }
+
     try {
-        console.log('Starting call...');
+        console.log('Starting call in room:', currentRoom);
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localVideo.srcObject = localStream;
         console.log('Local media stream obtained');
@@ -118,8 +124,13 @@ socket.on('user-connected', (userId) => {
 });
 
 socket.on('offer', async (offer) => {
+    if (!currentRoom) {
+        console.error('No room set when receiving offer');
+        return;
+    }
+
     try {
-        console.log('Received offer from remote user');
+        console.log('Received offer from remote user for room:', currentRoom);
         if (!peerConnection) {
             peerConnection = new RTCPeerConnection(servers);
             console.log('Created peer connection for incoming call');
