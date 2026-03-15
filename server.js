@@ -63,7 +63,12 @@ app.get('/', (req, res) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nexcall')
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => {
+    console.log('MongoDB connection error:', err.message);
+    console.log('Server will continue running without database...');
+  });
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
