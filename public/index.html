@@ -17,54 +17,143 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #000000 !important;
+            background: #000000;
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        .premium-card {
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
 
-        .glass-overlay {
-            background: rgba(255, 255, 255, 0.05);
+        .hero-section {
+            text-align: center;
+            padding: 80px 0;
+            position: relative;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(75, 85, 229, 0.1) 100%);
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #e2e8f6;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .video-container {
-            background: #111111;
-            border-radius: 16px;
-            overflow: hidden;
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group {
             position: relative;
+            margin-bottom: 1.5rem;
         }
 
-        video {
+        .premium-input {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .premium-input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .premium-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .floating-label {
+            position: absolute;
+            top: 0.75rem;
+            left: 1.25rem;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #ffffff;
+            pointer-events: none;
+            z-index: 10;
         }
 
         .btn-primary {
-            background: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: -1;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
             background: transparent;
             color: #ffffff;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
@@ -73,64 +162,117 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .text-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .video-container {
+            background: #111111;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             color: #ffffff;
-            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-        .text-input:focus {
-            outline: none;
-            border-color: #ffffff;
-            box-shadow: 0 0 0 20px rgba(255, 255, 255, 0.2);
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
         }
 
-        .text-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+        .status-online {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-connecting {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(107, 114, 128, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .controls-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+            color: #ffffff;
+            font-weight: 500;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
+        }
+
+        .notification-success {
+            border-left-color: #10b981;
+        }
+
+        .notification-error {
+            border-left-color: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
 
-        .fade-out {
-            animation: fadeOut 0.3s ease-out;
-        }
-
-        .slide-up {
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .scale-in {
-            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -142,148 +284,111 @@
             }
         }
 
-        @keyframes scaleIn {
+        .fade-out {
+            animation: fadeOut 0.3s ease-in;
+        }
+
+        @keyframes fadeOut {
             from {
-                opacity: 0;
-                transform: scale(0.9);
+                opacity: 1;
+                transform: translateY(0);
             }
 
             to {
-                opacity: 1;
-                transform: scale(1);
+                opacity: 0;
+                transform: translateY(-20px);
             }
         }
 
-        .status-online {
-            background: #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .status-connecting {
-            background: #6b7280;
-            box-shadow: 0 0 15px rgba(107, 114, 128, 0.4);
-        }
-
-        .status-offline {
-            background: #ef4444;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .premium-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .glow-effect {
-            box-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
-        }
-
-        .floating-label {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            color: #ffffff;
-            font-size: 12px;
+        .footer-text {
+            color: #9ca3af;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
-        .notification-success {
-            background: #10b981;
-            color: #ffffff;
-            border-left: 4px solid #10b981;
+        @media (min-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
-        .notification-error {
-            background: #ef4444;
-            color: #ffffff;
-            border-left: 4px solid #ef4444;
-        }
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1400px;
+            }
 
-        .notification-info {
-            background: #3b82f6;
-            color: #ffffff;
-            border-left: 4px solid #3b82f6;
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+            }
         }
     </style>
 </head>
 
-@keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateY(10px);
-}
-</div>
-</div>
-<div class="flex items-center space-x-6">
-    <div class="flex items-center space-x-3">
-        <div id="connectionStatus" class="status-indicator status-connecting w-3 h-3 rounded-full">
-        </div>
-        <span id="statusText" class="text-gray-400 text-sm">Connecting...</span>
-    </div>
-    <div id="userCount" class="text-gray-400 text-sm">
-        <span class="font-medium">0</span> users
-    </div>
-</div>
-</div>
-</header>
+<body class="antialiased">
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-title">NexCall</div>
+            <div class="hero-subtitle">Premium Video Conferencing</div>
+        </section>
 
-<!-- Main Content -->
-<main class="flex-1 flex items-center justify-center px-6 py-12">
-    <div class="w-full max-w-4xl">
-        <!-- Room Join Section -->
-        <div id="roomSection" class="premium-card p-8 mb-8 fade-in">
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold text-black mb-2">Start Video Call</h2>
-                <p class="text-gray-600">Enter a room ID to begin your premium video experience</p>
-            </div>
-
-            <div class="space-y-6">
-                <div class="relative">
-                    <input type="text" id="roomInput" placeholder="Enter room ID..."
-                        class="text-input w-full px-6 py-4 rounded-xl text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300"
+        <!-- Main Content -->
+        <main>
+            <!-- Room Join Section -->
+            <section id="roomSection" class="premium-card fade-in">
+                <div class="input-group">
+                    <input type="text" id="roomInput" placeholder="Enter room ID..." class="premium-input"
                         maxlength="50">
-                    <div
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 floating-label px-3 py-1 rounded-lg text-xs font-medium text-gray-700">
-                        Room ID
+                    <div class="floating-label">Room ID</div>
+                </div>
+
+                <button onclick="joinRoom()" class="btn-primary">
+                    Join Room
+                </button>
+            </section>
+
+            <!-- Video Section -->
+            <section id="videoSection" class="hidden fade-in">
+                <div class="video-grid">
+                    <!-- Local Video -->
+                    <div class="video-container">
+                        <div class="video-overlay">You</div>
+                        <video id="localVideo" autoplay muted playsinline></video>
+                    </div>
+
+                    <!-- Remote Video -->
+                    <div class="video-container">
+                        <div id="remoteVideoContainer" class="hidden">
+                            <div class="video-overlay">Remote User</div>
+                        </div>
+                        <video id="remoteVideo" autoplay playsinline></video>
                     </div>
                 </div>
 
-                <button onclick="joinRoom()"
-                    class="btn-primary w-full py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 16l-4-4m0 0l4 4m-4-4v8m0 0v8m8 0v8m0-8a2 2 0 00-2 2H6a2 2 0 00-2-2V6a2 2 0 002-2h2m4 0a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2">
-                        </path>
-                    </svg>
-                    <span>Join Room</span>
-                </button>
-            </div>
-        </div>
-    </div>
+                <!-- Controls -->
+                <div class="controls-container">
+                    <button onclick="startCall()" id="startCallBtn" class="btn-primary">
+                        Start Call
+                    </button>
 
-    <!-- Video Section -->
-    <div id="videoSection" class="hidden w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Local Video -->
-            <div class="video-container glow-effect">
-                <div
-                    class="absolute top-4 left-4 z-10 floating-label px-3 py-1 rounded-lg text-xs font-medium text-gray-700">
-                    You
+                    <button onclick="endCall()" id="endCallBtn" class="btn-secondary">
+                        End Call
+                    </button>
                 </div>
-                <video id="localVideo" autoplay muted playsinline class="rounded-xl"></video>
-            </div>
+            </section>
+        </main>
 
-            <!-- Remote Video -->
-            <div class="video-container glow-effect">
-                <div id="remoteVideoContainer"
-                    class="hidden absolute top-4 left-4 z-10 floating-label px-3 py-1 rounded-lg text-xs font-medium text-gray-700">
-                    Remote User
-                </div>
-                <video id="remoteVideo" autoplay playsinline class="rounded-xl"></video>
-            </div>
-        </div>
-
+        <!-- Footer -->
+        <footer>
+            <div class="footer-text"> 2024 NexCall • Premium Video Conferencing</div>
+        </footer>
         <!-- Controls -->
         <div class="premium-card p-6 fade-in">
             <div class="flex justify-center space-x-4">
@@ -324,20 +429,20 @@ transform: translateY(10px);
                 </div>
             </div>
         </div>
-</main>
+        </main>
 
-<!-- Footer -->
-<footer class="glass-overlay border-t border-white/10 p-6">
-    <div class="max-w-7xl mx-auto text-center">
-        <p class="text-gray-400 text-sm">
-            2024 NexCall • Premium Video Conferencing
-        </p>
+        <!-- Footer -->
+        <footer class="glass-overlay border-t border-white/10 p-6">
+            <div class="max-w-7xl mx-auto text-center">
+                <p class="text-gray-400 text-sm">
+                    2024 NexCall • Premium Video Conferencing
+                </p>
+            </div>
+        </footer>
     </div>
-</footer>
-</div>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="client.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
 </body>
 
 </html>
